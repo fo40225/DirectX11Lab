@@ -10,5 +10,31 @@ int APIENTRY wWinMain(
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-	return 0;
+	HRESULT hr = S_OK;
+
+	// Begin initialization.
+
+	// Instantiate the window manager class.
+	std::shared_ptr<MainClass> winMain = std::shared_ptr<MainClass>(new MainClass());
+	// Create a window.
+	hr = winMain->CreateDesktopWindow();
+
+	if (SUCCEEDED(hr))
+	{
+		// Instantiate the device manager class.
+		std::shared_ptr<DeviceResources> deviceResources = std::shared_ptr<DeviceResources>(new DeviceResources());
+		// Create device resources.
+		deviceResources->CreateDeviceResources();
+
+		// Instantiate the renderer.
+		std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(deviceResources));
+
+		// We have a window, so initialize window size-dependent resources.
+		deviceResources->CreateWindowResources(winMain->GetWindowHandle());
+
+		// Run the program.
+		hr = winMain->Run(deviceResources, renderer);
+	}
+
+	return hr;
 }

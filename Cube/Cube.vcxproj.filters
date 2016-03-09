@@ -21,6 +21,15 @@
     <ClCompile Include="Cube.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
+    <ClCompile Include="MainClass.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceResources.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -30,6 +39,15 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="Cube.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="MainClass.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceResources.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>
