@@ -22,3 +22,5 @@
 #include <string>
 #include <d3d11_2.h>
 #include <wrl\client.h>
+#include <ppltasks.h>
+#include <DirectXMath.h>

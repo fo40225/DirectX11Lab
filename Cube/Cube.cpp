@@ -28,9 +28,11 @@ int APIENTRY wWinMain(
 
 		// Instantiate the renderer.
 		std::shared_ptr<Renderer> renderer = std::shared_ptr<Renderer>(new Renderer(deviceResources));
+		renderer->CreateDeviceDependentResources();
 
 		// We have a window, so initialize window size-dependent resources.
 		deviceResources->CreateWindowResources(winMain->GetWindowHandle());
+		renderer->CreateWindowSizeDependentResources();
 
 		// Run the program.
 		hr = winMain->Run(deviceResources, renderer);

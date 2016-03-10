@@ -154,3 +154,16 @@ HRESULT DeviceResources::ConfigureBackBuffer()
 
 	return hr;
 }
+
+ID3D11Device* DeviceResources::GetDevice() { return m_pd3dDevice.Get(); }
+
+float DeviceResources::GetAspectRatio()
+{
+	return static_cast<float>(m_bbDesc.Width) / static_cast<float>(m_bbDesc.Height);
+}
+
+ID3D11DeviceContext* DeviceResources::GetDeviceContext() { return m_pd3dDeviceContext.Get(); }
+
+ID3D11RenderTargetView* DeviceResources::GetRenderTarget() { return m_pRenderTarget.Get(); }
+
+ID3D11DepthStencilView* DeviceResources::GetDepthStencil() { return m_pDepthStencilView.Get(); }

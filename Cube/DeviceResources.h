@@ -7,6 +7,11 @@ public:
 	HRESULT DeviceResources::CreateDeviceResources();
 	HRESULT CreateWindowResources(HWND hWnd);
 	HRESULT DeviceResources::ConfigureBackBuffer();
+	ID3D11Device* GetDevice();
+	float GetAspectRatio();
+	ID3D11DeviceContext* GetDeviceContext();
+	ID3D11RenderTargetView* GetRenderTarget();
+	ID3D11DepthStencilView* GetDepthStencil();
 private:
 	D3D_FEATURE_LEVEL m_featureLevel;
 
