@@ -68,7 +68,7 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow)
 	g_hInst = hInstance;
 	RECT rc = { 0, 0, 800, 600 };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-	g_hWnd = CreateWindow(L"TutorialWindowClass", L"Direct3D 11 Tutorial 4: 3D Spaces",
+	g_hWnd = CreateWindow(L"TutorialWindowClass", L"Direct3D 11 Tutorial 5",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, hInstance,
 		nullptr);
@@ -289,7 +289,35 @@ HRESULT InitDevice()
 	if (FAILED(hr))
 		return hr;
 
-	g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, nullptr);
+	// Create depth stencil texture
+	D3D11_TEXTURE2D_DESC descDepth;
+	ZeroMemory(&descDepth, sizeof(descDepth));
+	descDepth.Width = width;
+	descDepth.Height = height;
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;
+	descDepth.Usage = D3D11_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	descDepth.CPUAccessFlags = 0;
+	descDepth.MiscFlags = 0;
+	hr = g_pd3dDevice->CreateTexture2D(&descDepth, nullptr, &g_pDepthStencil);
+	if (FAILED(hr))
+		return hr;
+
+	// Create the depth stencil view
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+	ZeroMemory(&descDSV, sizeof(descDSV));
+	descDSV.Format = descDepth.Format;
+	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture2D.MipSlice = 0;
+	hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView);
+	if (FAILED(hr))
+		return hr;
+
+	g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
 
 	// Setup the viewport
 	D3D11_VIEWPORT vp;
@@ -303,7 +331,7 @@ HRESULT InitDevice()
 
 	// Compile the vertex shader
 	ID3DBlob* pVSBlob = nullptr;
-	hr = CompileShaderFromFile(L"Tutorial04.fx", "VS", "vs_4_0", &pVSBlob);
+	hr = CompileShaderFromFile(L"Tutorial05.fx", "VS", "vs_4_0", &pVSBlob);
 	if (FAILED(hr))
 	{
 		MessageBox(nullptr,
@@ -339,7 +367,7 @@ HRESULT InitDevice()
 
 	// Compile the pixel shader
 	ID3DBlob* pPSBlob = nullptr;
-	hr = CompileShaderFromFile(L"Tutorial04.fx", "PS", "ps_4_0", &pPSBlob);
+	hr = CompileShaderFromFile(L"Tutorial05.fx", "PS", "ps_4_0", &pPSBlob);
 	if (FAILED(hr))
 	{
 		MessageBox(nullptr,
@@ -429,7 +457,8 @@ HRESULT InitDevice()
 		return hr;
 
 	// Initialize the world matrix
-	g_World = XMMatrixIdentity();
+	g_World1 = XMMatrixIdentity();
+	g_World2 = XMMatrixIdentity();
 
 	// Initialize the view matrix
 	XMVECTOR Eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
@@ -463,10 +492,16 @@ void Render()
 		t = (timeCur - timeStart) / 1000.0f;
 	}
 
-	//
-	// Animate the cube
-	//
-	g_World = XMMatrixRotationY(t);
+	// 1st Cube: Rotate around the origin
+	g_World1 = XMMatrixRotationY(t);
+
+	// 2nd Cube:  Rotate around origin
+	XMMATRIX mSpin = XMMatrixRotationZ(-t);
+	XMMATRIX mOrbit = XMMatrixRotationY(-t * 2.0f);
+	XMMATRIX mTranslate = XMMatrixTranslation(-4.0f, 0.0f, 0.0f);
+	XMMATRIX mScale = XMMatrixScaling(0.3f, 0.3f, 0.3f);
+
+	g_World2 = mScale * mSpin * mTranslate * mOrbit;
 
 	//
 	// Clear the back buffer
@@ -474,21 +509,40 @@ void Render()
 	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, Colors::MidnightBlue);
 
 	//
-	// Update variables
+	// Clear the depth buffer to 1.0 (max depth)
 	//
-	ConstantBuffer cb;
-	cb.mWorld = XMMatrixTranspose(g_World);
-	cb.mView = XMMatrixTranspose(g_View);
-	cb.mProjection = XMMatrixTranspose(g_Projection);
-	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+	g_pImmediateContext->ClearDepthStencilView(g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	//
-	// Renders a triangle
+	// Update variables for the first cube
+	//
+	ConstantBuffer cb1;
+	cb1.mWorld = XMMatrixTranspose(g_World1);
+	cb1.mView = XMMatrixTranspose(g_View);
+	cb1.mProjection = XMMatrixTranspose(g_Projection);
+	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cb1, 0, 0);
+
+	//
+	// Render the first cube
 	//
 	g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
 	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 	g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
-	g_pImmediateContext->DrawIndexed(36, 0, 0);        // 36 vertices needed for 12 triangles in a triangle list
+	g_pImmediateContext->DrawIndexed(36, 0, 0);
+
+	//
+	// Update variables for the second cube
+	//
+	ConstantBuffer cb2;
+	cb2.mWorld = XMMatrixTranspose(g_World2);
+	cb2.mView = XMMatrixTranspose(g_View);
+	cb2.mProjection = XMMatrixTranspose(g_Projection);
+	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer, 0, nullptr, &cb2, 0, 0);
+
+	//
+	// Render the second cube
+	//
+	g_pImmediateContext->DrawIndexed(36, 0, 0);
 
 	//
 	// Present our back buffer to our front buffer
@@ -509,6 +563,8 @@ void CleanupDevice()
 	if (g_pVertexLayout) g_pVertexLayout->Release();
 	if (g_pVertexShader) g_pVertexShader->Release();
 	if (g_pPixelShader) g_pPixelShader->Release();
+	if (g_pDepthStencil) g_pDepthStencil->Release();
+	if (g_pDepthStencilView) g_pDepthStencilView->Release();
 	if (g_pRenderTargetView) g_pRenderTargetView->Release();
 	if (g_pSwapChain1) g_pSwapChain1->Release();
 	if (g_pSwapChain) g_pSwapChain->Release();

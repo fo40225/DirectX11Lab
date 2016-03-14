@@ -36,5 +36,6 @@
   <ItemGroup>
     <FxCompile Include="Tutorial02.fx" />
     <FxCompile Include="Tutorial04.fx" />
+    <FxCompile Include="Tutorial05.fx" />
   </ItemGroup>
 </Project>
