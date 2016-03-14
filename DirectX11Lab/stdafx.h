@@ -18,3 +18,5 @@
 #include <tchar.h>
 
 // TODO:  在此參考您的程式所需要的其他標頭
+#include <d3d11_1.h>
+#include <directxcolors.h>
