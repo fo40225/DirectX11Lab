@@ -33,4 +33,7 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Tutorial02.fx" />
+  </ItemGroup>
 </Project>
