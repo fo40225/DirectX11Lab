@@ -1,5 +1,7 @@
 #pragma once
 
+using namespace DirectX;
+
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
@@ -18,6 +20,11 @@ ID3D11VertexShader*     g_pVertexShader = nullptr;
 ID3D11PixelShader*      g_pPixelShader = nullptr;
 ID3D11InputLayout*      g_pVertexLayout = nullptr;
 ID3D11Buffer*           g_pVertexBuffer = nullptr;
+ID3D11Buffer*           g_pIndexBuffer = nullptr;
+ID3D11Buffer*           g_pConstantBuffer = nullptr;
+XMMATRIX                g_World;
+XMMATRIX                g_View;
+XMMATRIX                g_Projection;
 
 //--------------------------------------------------------------------------------------
 // Forward declarations
@@ -33,5 +40,13 @@ void Render();
 //--------------------------------------------------------------------------------------
 struct SimpleVertex
 {
-	DirectX::XMFLOAT3 Pos;
+	XMFLOAT3 Pos;
+	XMFLOAT4 Color;
+};
+
+struct ConstantBuffer
+{
+	XMMATRIX mWorld;
+	XMMATRIX mView;
+	XMMATRIX mProjection;
 };
