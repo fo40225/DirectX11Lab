@@ -20,12 +20,12 @@ ID3D11Texture2D*        g_pDepthStencil = nullptr;
 ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
 ID3D11VertexShader*     g_pVertexShader = nullptr;
 ID3D11PixelShader*      g_pPixelShader = nullptr;
+ID3D11PixelShader*      g_pPixelShaderSolid = nullptr;
 ID3D11InputLayout*      g_pVertexLayout = nullptr;
 ID3D11Buffer*           g_pVertexBuffer = nullptr;
 ID3D11Buffer*           g_pIndexBuffer = nullptr;
 ID3D11Buffer*           g_pConstantBuffer = nullptr;
-XMMATRIX                g_World1;
-XMMATRIX                g_World2;
+XMMATRIX                g_World;
 XMMATRIX                g_View;
 XMMATRIX                g_Projection;
 
@@ -44,7 +44,7 @@ void Render();
 struct SimpleVertex
 {
 	XMFLOAT3 Pos;
-	XMFLOAT4 Color;
+	XMFLOAT3 Normal;
 };
 
 struct ConstantBuffer
@@ -52,4 +52,7 @@ struct ConstantBuffer
 	XMMATRIX mWorld;
 	XMMATRIX mView;
 	XMMATRIX mProjection;
+	XMFLOAT4 vLightDir[2];
+	XMFLOAT4 vLightColor[2];
+	XMFLOAT4 vOutputColor;
 };
