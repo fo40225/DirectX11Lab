@@ -36,4 +36,7 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="BasicCompute11.hlsl" />
+  </ItemGroup>
 </Project>
