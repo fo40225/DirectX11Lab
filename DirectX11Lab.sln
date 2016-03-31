@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cube", "Cube\Cube.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectX11Lab", "DirectX11Lab\DirectX11Lab.vcxproj", "{2C99350D-ACB7-45E9-BB48-998046FA4149}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BasicCompute11", "BasicCompute11\BasicCompute11.vcxproj", "{E5A76AD8-E76D-40D4-B416-F5520C7AA90A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{2C99350D-ACB7-45E9-BB48-998046FA4149}.Release|x64.Build.0 = Release|x64
 		{2C99350D-ACB7-45E9-BB48-998046FA4149}.Release|x86.ActiveCfg = Release|Win32
 		{2C99350D-ACB7-45E9-BB48-998046FA4149}.Release|x86.Build.0 = Release|Win32
+		{E5A76AD8-E76D-40D4-B416-F5520C7AA90A}.Debug|x64.ActiveCfg = Debug|x64
+		{E5A76AD8-E76D-40D4-B416-F5520C7AA90A}.Debug|x64.Build.0 = Debug|x64
+		{E5A76AD8-E76D-40D4-B416-F5520C7AA90A}.Debug|x86.ActiveCfg = Debug|Win32
+		{E5A76AD8-E76D-40D4-B416-F5520C7AA90A}.Debug|x86.Build.0 = Debug|Win32
+		{E5A76AD8-E76D-40D4-B416-F5520C7AA90A}.Release|x64.ActiveCfg = Release|x64
+		{E5A76AD8-E76D-40D4-B416-F5520C7AA90A}.Release|x64.Build.0 = Release|x64
+		{E5A76AD8-E76D-40D4-B416-F5520C7AA90A}.Release|x86.ActiveCfg = Release|Win32
+		{E5A76AD8-E76D-40D4-B416-F5520C7AA90A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
