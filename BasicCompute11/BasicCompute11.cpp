@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "BasicCompute11.h"
 
 int main()
 {

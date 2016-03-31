@@ -7,7 +7,18 @@
 
 #include "targetver.h"
 
+#define WIN32_LEAN_AND_MEAN             // 從 Windows 標頭排除不常使用的成員
+// Windows 標頭檔:
+#include <windows.h>
+
+// C RunTime 標頭檔
+#include <stdlib.h>
+#include <malloc.h>
+#include <memory.h>
 #include <stdio.h>
 #include <tchar.h>
 
 // TODO:  在此參考您的程式所需要的其他標頭
+
+#include <d3d11_2.h>
+#include <d3dcompiler.h>
