@@ -25,7 +25,7 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="BasicCompute11.h">
-      <Filter>原始程式檔</Filter>
+      <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

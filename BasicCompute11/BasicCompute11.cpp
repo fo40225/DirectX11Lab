@@ -8,19 +8,19 @@ int main()
 {
 	HRESULT hr = S_OK;
 
-	printf("Creating device...");
+	printf("Creating device...\n");
 	hr = CreateComputeDevice(&g_pDevice, &g_pContext);
 	if (FAILED(hr))
 		return hr;
 	printf("done\n");
 
-	printf("Creating Compute Shader...");
+	printf("Creating Compute Shader...\n");
 	hr = CreateComputeShader(L"BasicCompute11.hlsl", "CSMain", g_pDevice, &g_pCS);
 	if (FAILED(hr))
 		return hr;
 	printf("done\n");
 
-	printf("Creating buffers and filling them with initial data...");
+	printf("Creating buffers and filling them with initial data...\n");
 	for (int i = 0; i < NUM_ELEMENTS; ++i)
 	{
 		g_vBuf0[i].i = i;
@@ -32,13 +32,13 @@ int main()
 	CreateStructuredBuffer(g_pDevice, sizeof(BufType), NUM_ELEMENTS, nullptr, &g_pBufResult);
 	printf("done\n");
 
-	printf("Creating buffer views...");
+	printf("Creating buffer views...\n");
 	CreateBufferSRV(g_pDevice, g_pBuf0, &g_pBuf0SRV);
 	CreateBufferSRV(g_pDevice, g_pBuf1, &g_pBuf1SRV);
 	CreateBufferUAV(g_pDevice, g_pBufResult, &g_pBufResultUAV);
 	printf("done\n");
 
-	printf("Running Compute Shader...");
+	printf("Running Compute Shader...\n");
 	ID3D11ShaderResourceView* aRViews[2] = { g_pBuf0SRV, g_pBuf1SRV };
 	RunComputeShader(g_pContext, g_pCS, 2, aRViews, nullptr, nullptr, 0, g_pBufResultUAV, NUM_ELEMENTS, 1, 1);
 	printf("done\n");
@@ -54,7 +54,7 @@ int main()
 	p = (BufType*)MappedResource.pData;
 
 	// Verify that if Compute Shader has done right
-	printf("Verifying against CPU result...");
+	printf("Verifying against CPU result...\n");
 	bool bSuccess = true;
 	for (int i = 0; i < NUM_ELEMENTS; ++i)
 		if (p[i].i != g_vBuf0[i].i + g_vBuf1[i].i)
@@ -109,7 +109,7 @@ HRESULT CreateComputeDevice(ID3D11Device** ppDeviceOut, ID3D11DeviceContext** pp
 		ppContextOut              // Context out
 		);
 
-	bool bNeedRefDevice = false;
+	bool bNeedWarpDevice = false;
 	if (SUCCEEDED(hr))
 	{
 		// A hardware accelerated device has been created, so check for Compute Shader support
@@ -122,15 +122,15 @@ HRESULT CreateComputeDevice(ID3D11Device** ppDeviceOut, ID3D11DeviceContext** pp
 			(*ppDeviceOut)->CheckFeatureSupport(D3D11_FEATURE_D3D10_X_HARDWARE_OPTIONS, &hwopts, sizeof(hwopts));
 			if (!hwopts.ComputeShaders_Plus_RawAndStructuredBuffers_Via_Shader_4_x)
 			{
-				bNeedRefDevice = true;
-				printf("\nNo hardware Compute Shader capable device found, trying to create software (WARP) device.\n");
+				bNeedWarpDevice = true;
+				printf("No hardware Compute Shader capable device found, trying to create WARP (software) device.\n");
 			}
 		}
 	}
 
-	if (FAILED(hr) || bNeedRefDevice)
+	if (FAILED(hr) || bNeedWarpDevice)
 	{
-		// Either because of failure on creating a hardware device or hardware lacking CS capability, we create a WARP device here
+		// Either because of failure on creating a hardware device or hardware lacking CS capability, we create a WARP (software) device here
 
 		if (*ppDeviceOut)
 		{
@@ -292,6 +292,15 @@ void RunComputeShader(
 	pd3dImmediateContext->CSSetShader(pComputeShader, nullptr, 0);
 	pd3dImmediateContext->CSSetShaderResources(0, nNumViews, pShaderResourceViews);
 	pd3dImmediateContext->CSSetUnorderedAccessViews(0, 1, &pUnorderedAccessView, nullptr);
+	if (pCBCS && pCSData)
+	{
+		D3D11_MAPPED_SUBRESOURCE MappedResource;
+		pd3dImmediateContext->Map(pCBCS, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
+		memcpy(MappedResource.pData, pCSData, dwNumDataBytes);
+		pd3dImmediateContext->Unmap(pCBCS, 0);
+		ID3D11Buffer* ppCB[1] = { pCBCS };
+		pd3dImmediateContext->CSSetConstantBuffers(0, 1, ppCB);
+	}
 
 	pd3dImmediateContext->Dispatch(X, Y, Z);
 
